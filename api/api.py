@@ -1,5 +1,6 @@
 import flask
 from flask import request, jsonify
+import psycopg2
 
 
 app = flask.Flask(__name__)
@@ -57,5 +58,28 @@ def api_id():
     # Use the jsonify function from Flask to convert our list of
     # Python dictionaries to the JSON format.
     return jsonify(results)
+
+conn = psycopg2.connect("dbname=world user=acefox")
+
+cur = conn.cursor()
+
+# Execute a command: this creates a new table
+cur.execute("SELECT * FROM test);")
+
+# Pass data to fill a query placeholders and let Psycopg perform
+# the correct conversion (no more SQL injections!)
+cur.execute("INSERT INTO test (num, data) VALUES (%s, %s)", 20, "Sldks"))
+
+# Query the database and obtain data as Python objects
+cur.execute("SELECT * FROM test;")
+cur.fetchone()
+(1, 100, "abc'def")
+
+# Make the changes to the database persistent
+conn.commit()
+
+# Close communication with the database
+cur.close()
+conn.close()
 
 app.run()
